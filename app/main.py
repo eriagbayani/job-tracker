@@ -4,7 +4,7 @@ from app.jobs import fetch_jobs, filter_jobs
 def main() -> None:
 
     print("========================================")
-    print("          JOB HUNTER V0             ")
+    print("          JOB HUNTER V1             ")
     print("========================================")
 
     jobs = fetch_jobs()
@@ -14,11 +14,12 @@ def main() -> None:
     print("Matching Jobs: ")
 
     for i, job in enumerate(matched_jobs, start=1):
-        print(f"{i}. {job['title']}")
-        print(f"   Company: {job['company_name']}")
-        print(f"   Location: {job['location']}")
-        print(f"   Job Type: {', '.join(job['job_types'])}")
-        print(f"   URL: {job['url']}")
+        print(f"{i}. {job.title}")
+        print(f"   Company: {job.company_name}")
+        print(f"   created_at: {job.created_at}")
+        print(f"   Location: {job.location}")
+        print(f"   Job Type: {', '.join(job.job_types)}")
+        print(f"   URL: {job.url}")
         print()
 
 
