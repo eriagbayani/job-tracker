@@ -1,7 +1,9 @@
-from pydantic import ValidationError
-import pytest
+from unittest.mock import AsyncMock, patch
 
-from app.jobs import filter_jobs
+import pytest
+from pydantic import ValidationError
+
+from app.jobs import fetch_all_jobs, filter_jobs
 from app.models import Job
 
 
@@ -76,3 +78,32 @@ def test_job_model_rejects_invalid_url():
             location="Remote",
             created_at=1788776408,
         )
+
+
+@pytest.mark.asyncio
+async def test_fetch_all_jobs_combines_sources():
+    arbeitnow_jobs = [
+        make_job("Python Developer"),
+        make_job("Backend Engineer"),
+    ]
+
+    jobicy_jobs = [
+        make_job("Software Engineer"),
+    ]
+
+    with (
+        patch(
+            "app.jobs.fetch_arbeitnow_jobs",
+            new=AsyncMock(return_value=arbeitnow_jobs),
+        ),
+        patch(
+            "app.jobs.fetch_jobicy_jobs",
+            new=AsyncMock(return_value=jobicy_jobs),
+        ),
+    ):
+        result = await fetch_all_jobs()
+
+    assert len(result) == 3
+    assert result[0].title == "Python Developer"
+    assert result[1].title == "Backend Engineer"
+    assert result[2].title == "Software Engineer"

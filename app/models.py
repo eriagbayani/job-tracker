@@ -1,5 +1,5 @@
-from datetime import date
 from pydantic import BaseModel, HttpUrl
+
 
 class Job(BaseModel):
     slug: str

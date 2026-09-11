@@ -1,13 +1,15 @@
-from app.jobs import fetch_jobs, filter_jobs
+import asyncio
+
+from app.jobs import fetch_all_jobs, filter_jobs
 
 
-def main() -> None:
+async def main() -> None:
 
     print("========================================")
-    print("          JOB HUNTER V1             ")
+    print("          JOB HUNTER V2             ")
     print("========================================")
 
-    jobs = fetch_jobs()
+    jobs = await fetch_all_jobs()
     print(f"Found {len(jobs)} jobs")
 
     matched_jobs = filter_jobs(jobs)
@@ -24,4 +26,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

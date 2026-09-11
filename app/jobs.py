@@ -1,25 +1,27 @@
-import httpx
-import requests
+import asyncio
+
 from app.models import Job
+from app.sources.arbeitnow import fetch_arbeitnow_jobs
+from app.sources.jobicy import fetch_jobicy_jobs
 
-def fetch_jobs() -> list[Job]:
-    # Call API
-    url = 'https://www.arbeitnow.com/api/job-board-api'
-    response = httpx.get(url)
-    response.raise_for_status()
 
-    # Get JSON
-    data = response.json()
+async def fetch_all_jobs() -> list[Job]:
+    # call Arbeitnow for jobs
+    arbeitnow_jobs = fetch_arbeitnow_jobs()
 
-    # convert each dictionary into a Job
-    jobs = []
+    # call Jobicy  for jobs
+    jobicy_jobs = fetch_jobicy_jobs()
 
-    for job_data in data["data"]:
-        job = Job(**job_data)
-        jobs.append(job)
+    # gather both
+    results = await asyncio.gather(arbeitnow_jobs, jobicy_jobs)
 
-    # Return jobs
-    return jobs
+    # return combined list
+    all_jobs = []
+
+    for job_list in results:
+        for job in job_list:
+            all_jobs.append(job)
+    return all_jobs
 
 
 def filter_jobs(jobs: list[Job]) -> list[Job]:
